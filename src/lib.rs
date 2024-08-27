@@ -6,6 +6,14 @@ pub mod activity_identifier;
 pub mod layout;
 pub mod module;
 
+pub extern crate abi_stable;
+pub extern crate gdk;
+pub extern crate glib;
+pub extern crate glib_macros;
+pub extern crate gtk;
+pub extern crate gtk_layer_shell;
+pub extern crate log;
+
 /// gtk::Widget wrapper for sending trough the abi
 #[repr(C)]
 #[derive(StableAbi)]
