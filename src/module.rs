@@ -1,4 +1,3 @@
-use std::fmt::Display;
 
 use abi_stable::{
     declare_root_module_statics,
@@ -6,11 +5,11 @@ use abi_stable::{
     library::RootModule,
     package_version_strings, sabi_trait,
     sabi_types::VersionStrings,
-    std_types::{RBox, RBoxError, RResult, RStr, RString},
+    std_types::{RBox, RBoxError, ROption, RResult, RStr, RString},
     StableAbi,
 };
 
-use crate::SabiWidget;
+use crate::{NotImplementedError, SabiWidget};
 
 pub type ModuleType = SabiModule_TO<'static, RBox<()>>;
 
@@ -105,18 +104,11 @@ pub trait SabiModule {
     fn default_config(&self) -> RResult<RString, RBoxError> {
         RResult::RErr(RBoxError::new(NotImplementedError::default()))
     }
-}
 
-/// Error type used for abi compatibility
-#[derive(Debug, Default)]
-struct NotImplementedError {}
-
-impl Display for NotImplementedError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "method not implemented, update the module")
+    fn cli_command(&self, _command: RString) -> RResult<RString, RBoxError> {
+        RResult::RErr(RBoxError::new(NotImplementedError::default()))
     }
 }
-impl std::error::Error for NotImplementedError {}
 
 #[repr(C)]
 #[derive(StableAbi)]
@@ -182,6 +174,7 @@ pub enum UIServerCommand {
     RequestNotification {
         activity_id: ActivityIdentifier,
         mode: u8,
+        duration: ROption<u64>,
     },
 }
 
@@ -194,4 +187,14 @@ pub struct ActivityIdentifier {
     /// Activity name, must be the same as `activityWidget.name()`
     #[sabi(last_prefix_field)]
     pub(crate) activity: RString,
+
+    pub(crate) metadata: ActivityMetadata,
+}
+
+#[repr(C)]
+#[derive(StableAbi, Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord, Default)]
+pub struct ActivityMetadata {
+    pub(crate) window_name: ROption<RString>,
+
+    pub(crate) additional_metadata: ROption<RString>,
 }

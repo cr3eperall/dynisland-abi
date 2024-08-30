@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use abi_stable::StableAbi;
 use glib::translate::{FromGlibPtrNone, ToGlibPtr};
 use gtk::{Application, Widget};
@@ -92,3 +94,14 @@ impl TryInto<Application> for SabiApplication {
         }
     }
 }
+
+/// Error type used for abi compatibility
+#[derive(Debug, Default)]
+pub(crate) struct NotImplementedError {}
+
+impl Display for NotImplementedError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "method not implemented, update the module")
+    }
+}
+impl std::error::Error for NotImplementedError {}
