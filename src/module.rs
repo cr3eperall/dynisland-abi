@@ -99,11 +99,11 @@ pub trait SabiModule {
     ///     }
     /// }
     /// ```
-    #[sabi(last_prefix_field)]
     fn default_config(&self) -> RResult<RString, RBoxError> {
         RResult::RErr(RBoxError::new(NotImplementedError::default()))
     }
-
+    
+    #[sabi(last_prefix_field)]
     fn cli_command(&self, _command: RString) -> RResult<RString, RBoxError> {
         RResult::RErr(RBoxError::new(NotImplementedError::default()))
     }
@@ -184,9 +184,9 @@ pub struct ActivityIdentifier {
     /// Module name, must be the same as the on provided in `ModuleBuilder`
     pub(crate) module: RString,
     /// Activity name, must be the same as `activityWidget.name()`
-    #[sabi(last_prefix_field)]
     pub(crate) activity: RString,
-
+    
+    #[sabi(last_prefix_field)]
     pub(crate) metadata: ActivityMetadata,
 }
 
@@ -195,5 +195,6 @@ pub struct ActivityIdentifier {
 pub struct ActivityMetadata {
     pub(crate) window_name: ROption<RString>,
 
+    #[sabi(last_prefix_field)]
     pub(crate) additional_metadata: ROption<RString>,
 }

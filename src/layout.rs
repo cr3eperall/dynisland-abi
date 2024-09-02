@@ -21,7 +21,6 @@ pub trait SabiLayoutManager {
     fn remove_activity(&mut self, activity: &ActivityIdentifier);
     fn list_activities(&self) -> RVec<ActivityIdentifier>;
     fn get_activity(&self, activity: &ActivityIdentifier) -> ROption<SabiWidget>;
-    #[sabi(last_prefix_field)]
     fn activity_notification(
         &self,
         activity: &ActivityIdentifier,
@@ -31,6 +30,7 @@ pub trait SabiLayoutManager {
     fn list_windows(&self) -> RVec<RString> {
         RVec::new()
     }
+    #[sabi(last_prefix_field)]
     fn cli_command(&self, _command: RString) -> RResult<RString, RBoxError> {
         RResult::RErr(RBoxError::new(NotImplementedError::default()))
     }
