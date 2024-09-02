@@ -12,12 +12,12 @@ impl ActivityIdentifier {
             metadata: ActivityMetadata::default(),
         }
     }
-    pub fn module(&self) -> String {
-        self.module.clone().into()
+    pub fn module(&self) -> &str {
+        &self.module
     }
 
-    pub fn activity(&self) -> String {
-        self.activity.clone().into()
+    pub fn activity(&self) -> &str {
+        &self.activity
     }
 
     pub fn metadata_mut(&mut self) -> &mut ActivityMetadata {
@@ -32,7 +32,7 @@ impl ActivityIdentifier {
     }
 }
 
-impl ActivityMetadata{
+impl ActivityMetadata {
     pub fn new() -> Self {
         Self::default()
     }
@@ -54,7 +54,6 @@ impl ActivityMetadata{
             ROption::RNone => None,
         }
     }
-    
 }
 
 impl Display for ActivityIdentifier {
