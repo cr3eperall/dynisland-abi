@@ -102,7 +102,7 @@ pub trait SabiModule {
     fn default_config(&self) -> RResult<RString, RBoxError> {
         RResult::RErr(RBoxError::new(NotImplementedError::default()))
     }
-    
+
     #[sabi(last_prefix_field)]
     fn cli_command(&self, _command: RString) -> RResult<RString, RBoxError> {
         RResult::RErr(RBoxError::new(NotImplementedError::default()))
@@ -185,7 +185,7 @@ pub struct ActivityIdentifier {
     pub(crate) module: RString,
     /// Activity name, must be the same as `activityWidget.name()`
     pub(crate) activity: RString,
-    
+
     #[sabi(last_prefix_field)]
     pub(crate) metadata: ActivityMetadata,
 }
