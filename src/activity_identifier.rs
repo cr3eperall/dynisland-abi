@@ -45,13 +45,13 @@ impl ActivityMetadata {
             ROption::RNone => None,
         }
     }
-    pub fn set_additional_metadata(&mut self, additional_metadata: &str) {
-        self.additional_metadata = ROption::RSome(additional_metadata.to_string().into());
+    pub fn set_additional_metadata(&mut self, key: String, value: String) {
+        self.additional_metadata.insert(key.into(), value.into());
     }
-    pub fn additional_metadata(&self) -> Option<String> {
-        match &self.additional_metadata {
-            ROption::RSome(metadata) => Some(metadata.clone().into()),
-            ROption::RNone => None,
+    pub fn additional_metadata(&self, key: &str) -> Option<String> {
+        match &self.additional_metadata.get(key) {
+            Option::Some(metadata) => Some(metadata.to_string()),
+            Option::None => None,
         }
     }
 }

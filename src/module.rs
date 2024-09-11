@@ -1,10 +1,12 @@
+use std::hash::Hash;
+
 use abi_stable::{
     declare_root_module_statics,
     external_types::crossbeam_channel::RSender,
     library::RootModule,
     package_version_strings, sabi_trait,
     sabi_types::VersionStrings,
-    std_types::{RBox, RBoxError, ROption, RResult, RStr, RString},
+    std_types::{RBox, RBoxError, RHashMap, ROption, RResult, RStr, RString},
     StableAbi,
 };
 
@@ -178,8 +180,13 @@ pub enum UIServerCommand {
 }
 
 /// Module and activity name, used to uniquely identify a dynamic activity
+///
+/// Also includes metadata, this is not used for identification but for additional information
+/// storage and comunication from the module to the layout manager
+///
+/// This struct must not change once the activity is registered
 #[repr(C)]
-#[derive(StableAbi, Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord)]
+#[derive(StableAbi, Clone, Debug, PartialOrd, Ord)]
 pub struct ActivityIdentifier {
     /// Module name, must be the same as the on provided in `ModuleBuilder`
     pub(crate) module: RString,
@@ -190,11 +197,87 @@ pub struct ActivityIdentifier {
     pub(crate) metadata: ActivityMetadata,
 }
 
+impl Hash for ActivityIdentifier {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.module.hash(state);
+        self.activity.hash(state);
+    }
+}
+impl Eq for ActivityIdentifier {}
+impl PartialEq for ActivityIdentifier {
+    fn eq(&self, other: &Self) -> bool {
+        self.module == other.module && self.activity == other.activity
+    }
+}
+
 #[repr(C)]
-#[derive(StableAbi, Clone, PartialEq, Eq, Hash, Debug, PartialOrd, Ord, Default)]
+#[derive(StableAbi, Clone, Debug, Default, PartialEq, Eq)]
 pub struct ActivityMetadata {
     pub(crate) window_name: ROption<RString>,
 
     #[sabi(last_prefix_field)]
-    pub(crate) additional_metadata: ROption<RString>,
+    pub(crate) additional_metadata: RHashMap<RString, RString>,
+}
+
+impl PartialOrd for ActivityMetadata {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.window_name.cmp(&other.window_name))
+    }
+}
+impl Ord for ActivityMetadata {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.window_name.cmp(&other.window_name)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_activity_identifier_hash() {
+        let act = ActivityIdentifier {
+            module: RString::from("module"),
+            activity: RString::from("activity"),
+            metadata: ActivityMetadata::default(),
+        };
+        let mut act2 = ActivityIdentifier {
+            module: RString::from("module"),
+            activity: RString::from("activity"),
+            metadata: ActivityMetadata::default(),
+        };
+        act2.metadata
+            .additional_metadata
+            .insert(RString::from("test"), RString::from("test"));
+        act2.metadata.window_name = ROption::RSome(RString::from("window"));
+        assert_eq!(act, act2);
+        let mut set = std::collections::HashSet::new();
+        set.insert(act.clone());
+        assert!(set.contains(&act));
+    }
+
+    #[test]
+    fn test_activity_identifier_cmp() {
+        let mut act = ActivityIdentifier {
+            module: RString::from("module"),
+            activity: RString::from("activity"),
+            metadata: ActivityMetadata::default(),
+        };
+        let mut act2 = ActivityIdentifier {
+            module: RString::from("module"),
+            activity: RString::from("activity"),
+            metadata: ActivityMetadata::default(),
+        };
+
+        act2.metadata
+            .additional_metadata
+            .insert(RString::from("test"), RString::from("test"));
+        act2.metadata.window_name = ROption::RSome(RString::from("window"));
+        let cmp = act.cmp(&act2);
+        assert_eq!(cmp, std::cmp::Ordering::Greater);
+
+        act.metadata.window_name = ROption::RSome(RString::from("window"));
+        let cmp = act.cmp(&act2);
+        assert_eq!(cmp, std::cmp::Ordering::Equal);
+    }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "dynisland-abi"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["cr3eperall"]
 description = "abi_stable types for the dynisland bar"
 license = "MIT"
