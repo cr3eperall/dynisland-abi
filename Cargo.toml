@@ -10,10 +10,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gtk = { version = "0.8.0", package = "gtk4", features = ["v4_12", "unsafe-assume-initialized"] }
-gdk = { version = "0.8.0", package = "gdk4" }
-glib = {version="0.19.5"}
-glib-macros = { version="0.19.5"}
+gtk = { version = "0.8.2", package = "gtk4", features = ["v4_12", "unsafe-assume-initialized"] }
+gdk = { version = "0.8.2", package = "gdk4" }
+glib = {version="0.19.9"}
+glib-macros = { version="0.19.9"}
 gtk-layer-shell= { version = "0.3.0", package = "gtk4-layer-shell"}
 log = "0.4.20"
 abi_stable = "0.11.3"
